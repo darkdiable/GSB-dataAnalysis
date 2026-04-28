@@ -3,31 +3,138 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib import rcParams
+from matplotlib.font_manager import FontProperties, findfont, FontManager
 import seaborn as sns
 import os
 
-# 设置中文字体
+# 全局字体属性
+_chinese_font = None
+_selected_font_name = None
+
 def setup_chinese_font():
     """
-    设置matplotlib中文显示
+    设置matplotlib中文显示 - 最终修复版
     """
-    # 尝试设置中文字体
-    font_names = ['SimHei', 'Microsoft YaHei', 'Arial Unicode MS', 'PingFang SC', 'Hiragino Sans GB']
+    global _chinese_font, _selected_font_name
     
-    for font_name in font_names:
-        try:
-            rcParams['font.family'] = 'sans-serif'
-            rcParams['font.sans-serif'] = [font_name] + rcParams['font.sans-serif']
-            rcParams['axes.unicode_minus'] = False
-            break
-        except:
-            continue
-    
-    # 设置风格
+    # ===== 重要：首先设置风格，这必须在字体设置之前 =====
     plt.style.use('seaborn-v0_8-whitegrid')
-    rcParams['figure.figsize'] = (12, 8)
-    rcParams['figure.dpi'] = 100
-    rcParams['font.size'] = 12
+    
+    # macOS常见中文字体列表（按优先级排序）
+    font_candidates = [
+        'PingFang SC',           # macOS系统默认中文字体
+        'STHeiti',                # 华文黑体
+        'Heiti TC',               # 黑体-繁
+        'Heiti SC',               # 黑体-简
+        'Hiragino Sans GB',       # 冬青黑体
+        'Arial Unicode MS',       # Arial Unicode
+        'Microsoft YaHei',        # 微软雅黑（如果安装了Office）
+        'SimHei',                 # 黑体
+        'Songti SC',              # 宋体
+        'KaiTi',                  # 楷体
+    ]
+    
+    # 查找可用的中文字体
+    fm = FontManager()
+    available_fonts = [f.name for f in fm.ttflist]
+    
+    selected_font = None
+    for font_name in font_candidates:
+        if font_name in available_fonts:
+            selected_font = font_name
+            print(f"找到中文字体: {font_name}")
+            break
+    
+    # 如果没有找到，尝试直接查找字体文件
+    if selected_font is None:
+        # macOS常见的中文字体文件路径
+        font_paths = [
+            '/System/Library/Fonts/PingFang.ttc',
+            '/System/Library/Fonts/STHeiti Light.ttc',
+            '/System/Library/Fonts/STHeiti Medium.ttc',
+            '/Library/Fonts/Arial Unicode.ttf',
+        ]
+        
+        for font_path in font_paths:
+            if os.path.exists(font_path):
+                try:
+                    _chinese_font = FontProperties(fname=font_path)
+                    print(f"使用字体文件: {font_path}")
+                    _selected_font_name = os.path.basename(font_path)
+                    break
+                except Exception as e:
+                    print(f"加载字体文件失败: {font_path}")
+                    continue
+    
+    # ===== 设置matplotlib参数（在style之后） =====
+    if selected_font:
+        # 方法1: 使用rcParams设置全局字体
+        rcParams['font.family'] = 'sans-serif'
+        rcParams['font.sans-serif'] = [selected_font] + rcParams['font.sans-serif']
+        rcParams['axes.unicode_minus'] = False
+        rcParams['figure.figsize'] = (12, 8)
+        rcParams['figure.dpi'] = 100
+        rcParams['font.size'] = 12
+        _selected_font_name = selected_font
+        print(f"已设置字体: {selected_font}")
+    elif _chinese_font is not None:
+        # 有字体文件，通过FontProperties使用
+        rcParams['axes.unicode_minus'] = False
+        rcParams['figure.figsize'] = (12, 8)
+        rcParams['figure.dpi'] = 100
+        rcParams['font.size'] = 12
+        print(f"已设置字体文件: {_selected_font_name}")
+    else:
+        # 最后尝试：使用DejaVu Sans（可能不支持中文，但至少不会报错）
+        print("警告: 未找到中文字体，图表中的中文可能显示为方框")
+        rcParams['font.family'] = 'DejaVu Sans'
+        rcParams['axes.unicode_minus'] = False
+        rcParams['figure.figsize'] = (12, 8)
+        rcParams['figure.dpi'] = 100
+        rcParams['font.size'] = 12
+
+
+def get_chinese_font(size=12):
+    """
+    获取中文字体属性对象
+    """
+    global _chinese_font, _selected_font_name
+    if _chinese_font:
+        return FontProperties(fname=_chinese_font.get_file(), size=size)
+    elif _selected_font_name:
+        return FontProperties(family=[_selected_font_name], size=size)
+    return FontProperties(size=size)
+
+
+def set_axes_text_font(ax, fontsize=12):
+    """
+    为坐标轴的所有文本元素设置中文字体
+    """
+    font = get_chinese_font(fontsize)
+    title_font = get_chinese_font(fontsize + 2)
+    
+    # 设置标题
+    title = ax.get_title()
+    if title:
+        ax.set_title(title, fontproperties=title_font, fontweight='bold')
+    
+    # 设置x轴标签
+    xlabel = ax.get_xlabel()
+    if xlabel:
+        ax.set_xlabel(xlabel, fontproperties=font)
+    
+    # 设置y轴标签
+    ylabel = ax.get_ylabel()
+    if ylabel:
+        ax.set_ylabel(ylabel, fontproperties=font)
+    
+    # 设置刻度标签
+    for label in ax.get_xticklabels():
+        label.set_fontproperties(font)
+    for label in ax.get_yticklabels():
+        label.set_fontproperties(font)
+    
+    return ax
 
 
 class DataVisualizer:
@@ -58,15 +165,21 @@ class DataVisualizer:
         
         monthly_data = self.analysis_results['monthly_sales']['monthly_data'].copy()
         
+        # 获取中文字体
+        font_title = get_chinese_font(16)
+        font_label = get_chinese_font(12)
+        font_legend = get_chinese_font(10)
+        font_annot = get_chinese_font(10)
+        
         # 创建图表
         fig, ax1 = plt.subplots(figsize=(14, 8))
         
         # 绘制销售额折线
         color1 = '#1f77b4'
-        ax1.set_xlabel('月份', fontsize=12)
-        ax1.set_ylabel('销售额 (元)', color=color1, fontsize=12)
+        ax1.set_xlabel('月份', fontproperties=font_label)
+        ax1.set_ylabel('销售额 (元)', color=color1, fontproperties=font_label)
         line1 = ax1.plot(monthly_data['order_month'], monthly_data['销售额'], 
-                         color=color1, marker='o', linewidth=2, markersize=8, label='销售额')
+                         color=color1, marker='o', linewidth=2, markersize=8)
         ax1.tick_params(axis='y', labelcolor=color1)
         
         # 设置y轴刻度格式
@@ -75,13 +188,13 @@ class DataVisualizer:
         # 创建第二个y轴显示订单数
         ax2 = ax1.twinx()
         color2 = '#ff7f0e'
-        ax2.set_ylabel('订单数', color=color2, fontsize=12)
+        ax2.set_ylabel('订单数', color=color2, fontproperties=font_label)
         line2 = ax2.bar(monthly_data['order_month'], monthly_data['订单数'], 
-                        color=color2, alpha=0.3, label='订单数')
+                        color=color2, alpha=0.3)
         ax2.tick_params(axis='y', labelcolor=color2)
         
-        # 设置标题
-        plt.title('月度销售额与订单数趋势', fontsize=16, fontweight='bold', pad=20)
+        # 设置标题（显式使用中文字体）
+        ax1.set_title('月度销售额与订单数趋势', fontproperties=font_title, fontweight='bold', pad=20)
         
         # 添加数据标签（销售额）
         for i, val in enumerate(monthly_data['销售额']):
@@ -90,14 +203,21 @@ class DataVisualizer:
                         textcoords="offset points", 
                         xytext=(0, 10), 
                         ha='center', 
-                        fontsize=10)
+                        fontproperties=font_annot)
         
         # 旋转x轴标签
         plt.xticks(rotation=45, ha='right')
         
         # 添加图例
-        lines, labels = ax1.get_legend_handles_labels()
-        ax1.legend(lines, labels, loc='upper left')
+        ax1.legend([line1[0], line2], ['销售额', '订单数'], loc='upper left', prop=font_legend)
+        
+        # 为所有刻度标签设置字体
+        for label in ax1.get_xticklabels():
+            label.set_fontproperties(font_annot)
+        for label in ax1.get_yticklabels():
+            label.set_fontproperties(font_annot)
+        for label in ax2.get_yticklabels():
+            label.set_fontproperties(font_annot)
         
         plt.tight_layout()
         
@@ -123,6 +243,14 @@ class DataVisualizer:
         
         segment_stats = self.analysis_results['rfm']['segment_stats'].copy()
         
+        # 获取中文字体
+        font_suptitle = get_chinese_font(16)
+        font_title = get_chinese_font(14)
+        font_label = get_chinese_font(12)
+        font_legend = get_chinese_font(10)
+        font_annot = get_chinese_font(10)
+        font_tick = get_chinese_font(10)
+        
         # 按用户数排序
         segment_stats = segment_stats.sort_values('用户数', ascending=True)
         
@@ -133,8 +261,8 @@ class DataVisualizer:
         colors = plt.cm.viridis(np.linspace(0.2, 0.8, len(segment_stats)))
         bars = ax1.barh(segment_stats['Segment'], segment_stats['用户数'], color=colors, alpha=0.8)
         
-        ax1.set_xlabel('用户数', fontsize=12)
-        ax1.set_title('RFM用户分层 - 用户数分布', fontsize=14, fontweight='bold', pad=15)
+        ax1.set_xlabel('用户数', fontproperties=font_label)
+        ax1.set_title('RFM用户分层 - 用户数分布', fontproperties=font_title, fontweight='bold', pad=15)
         
         # 添加数据标签
         for bar in bars:
@@ -144,7 +272,7 @@ class DataVisualizer:
                         xytext=(5, 0),
                         textcoords='offset points',
                         va='center',
-                        fontsize=10)
+                        fontproperties=font_annot)
         
         # 子图2：平均消费金额和消费次数
         x = np.arange(len(segment_stats))
@@ -155,14 +283,23 @@ class DataVisualizer:
         bars3 = ax2.bar(x + width/2, segment_stats['平均消费次数'], width, 
                         label='平均消费次数', color='#ff7f0e', alpha=0.8)
         
-        ax2.set_xlabel('用户分层', fontsize=12)
-        ax2.set_ylabel('数值', fontsize=12)
-        ax2.set_title('RFM用户分层 - 消费特征', fontsize=14, fontweight='bold', pad=15)
+        ax2.set_xlabel('用户分层', fontproperties=font_label)
+        ax2.set_ylabel('数值', fontproperties=font_label)
+        ax2.set_title('RFM用户分层 - 消费特征', fontproperties=font_title, fontweight='bold', pad=15)
         ax2.set_xticks(x)
-        ax2.set_xticklabels(segment_stats['Segment'], rotation=45, ha='right')
-        ax2.legend()
+        ax2.set_xticklabels(segment_stats['Segment'], fontproperties=font_tick, rotation=45, ha='right')
+        ax2.legend(prop=font_legend)
         
-        plt.suptitle('RFM用户分层分析', fontsize=16, fontweight='bold', y=1.02)
+        # 为所有刻度标签设置字体
+        for label in ax1.get_xticklabels():
+            label.set_fontproperties(font_tick)
+        for label in ax1.get_yticklabels():
+            label.set_fontproperties(font_tick)
+        for label in ax2.get_yticklabels():
+            label.set_fontproperties(font_tick)
+        
+        # 总标题
+        plt.suptitle('RFM用户分层分析', fontproperties=font_suptitle, fontweight='bold', y=1.02)
         plt.tight_layout()
         
         # 保存图表
@@ -187,6 +324,14 @@ class DataVisualizer:
         
         category_stats = self.analysis_results['category_contribution']['category_stats'].copy()
         
+        # 获取中文字体
+        font_suptitle = get_chinese_font(16)
+        font_title = get_chinese_font(14)
+        font_label = get_chinese_font(12)
+        font_pie = get_chinese_font(11)
+        font_annot = get_chinese_font(10)
+        font_tick = get_chinese_font(10)
+        
         # 创建图表
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8))
         
@@ -210,6 +355,7 @@ class DataVisualizer:
         colors = plt.cm.Set3(np.linspace(0, 1, len(main_categories)))
         explode = [0.05] + [0] * (len(main_categories) - 1)  # 突出显示第一个
         
+        # 关键：为pie图显式设置字体属性
         wedges, texts, autotexts = ax1.pie(
             main_categories['销售额'],
             labels=main_categories['category'],
@@ -217,15 +363,19 @@ class DataVisualizer:
             autopct='%1.1f%%',
             explode=explode,
             startangle=90,
-            textprops={'fontsize': 11},
+            textprops={'fontproperties': font_pie},
             pctdistance=0.85
         )
+        
+        # 为百分比文本也设置字体
+        for autotext in autotexts:
+            autotext.set_fontproperties(font_pie)
         
         # 添加中心圆（环形图效果）
         centre_circle = plt.Circle((0, 0), 0.70, fc='white')
         ax1.add_artist(centre_circle)
         
-        ax1.set_title('产品类别销售额占比', fontsize=14, fontweight='bold', pad=15)
+        ax1.set_title('产品类别销售额占比', fontproperties=font_title, fontweight='bold', pad=15)
         ax1.axis('equal')  # 确保饼图是圆形
         
         # 子图2：类别销售额柱状图
@@ -233,11 +383,17 @@ class DataVisualizer:
                        color=plt.cm.viridis(np.linspace(0.2, 0.8, len(category_stats))),
                        alpha=0.8)
         
-        ax2.set_xlabel('产品类别', fontsize=12)
-        ax2.set_ylabel('销售额 (元)', fontsize=12)
-        ax2.set_title('各产品类别销售额', fontsize=14, fontweight='bold', pad=15)
+        ax2.set_xlabel('产品类别', fontproperties=font_label)
+        ax2.set_ylabel('销售额 (元)', fontproperties=font_label)
+        ax2.set_title('各产品类别销售额', fontproperties=font_title, fontweight='bold', pad=15)
         ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: f'{x:,.0f}'))
-        plt.setp(ax2.xaxis.get_majorticklabels(), rotation=45, ha='right')
+        
+        # 设置x轴刻度标签字体
+        ax2.set_xticklabels(category_stats['category'], fontproperties=font_tick, rotation=45, ha='right')
+        
+        # 为所有刻度标签设置字体
+        for label in ax2.get_yticklabels():
+            label.set_fontproperties(font_tick)
         
         # 添加数据标签
         for bar in bars:
@@ -247,9 +403,10 @@ class DataVisualizer:
                         xytext=(0, 5),
                         textcoords='offset points',
                         ha='center',
-                        fontsize=10)
+                        fontproperties=font_annot)
         
-        plt.suptitle('产品类别贡献度分析', fontsize=16, fontweight='bold', y=1.02)
+        # 总标题
+        plt.suptitle('产品类别贡献度分析', fontproperties=font_suptitle, fontweight='bold', y=1.02)
         plt.tight_layout()
         
         # 保存图表
@@ -275,6 +432,14 @@ class DataVisualizer:
         product_stats = self.analysis_results['price_quantity_correlation']['product_stats'].copy()
         price_range_stats = self.analysis_results['price_quantity_correlation']['price_range_stats'].copy()
         
+        # 获取中文字体
+        font_suptitle = get_chinese_font(16)
+        font_title = get_chinese_font(14)
+        font_label = get_chinese_font(12)
+        font_legend = get_chinese_font(10)
+        font_annot = get_chinese_font(9)
+        font_tick = get_chinese_font(10)
+        
         # 创建图表
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8))
         
@@ -290,12 +455,16 @@ class DataVisualizer:
         bars2 = ax1.bar(x + width/2, price_range_stats['平均销量'], width,
                         label='平均销量', color='#ff7f0e', alpha=0.8)
         
-        ax1.set_xlabel('价格区间', fontsize=12)
-        ax1.set_ylabel('数量', fontsize=12)
-        ax1.set_title('不同价格区间的产品数与平均销量', fontsize=14, fontweight='bold', pad=15)
+        ax1.set_xlabel('价格区间', fontproperties=font_label)
+        ax1.set_ylabel('数量', fontproperties=font_label)
+        ax1.set_title('不同价格区间的产品数与平均销量', fontproperties=font_title, fontweight='bold', pad=15)
         ax1.set_xticks(x)
-        ax1.set_xticklabels(price_range_stats['价格区间'], rotation=45, ha='right')
-        ax1.legend()
+        ax1.set_xticklabels(price_range_stats['价格区间'], fontproperties=font_tick, rotation=45, ha='right')
+        ax1.legend(prop=font_legend)
+        
+        # 为y轴刻度设置字体
+        for label in ax1.get_yticklabels():
+            label.set_fontproperties(font_tick)
         
         # 添加数据标签
         for bars in [bars1, bars2]:
@@ -306,7 +475,7 @@ class DataVisualizer:
                             xytext=(0, 3),
                             textcoords='offset points',
                             ha='center',
-                            fontsize=9)
+                            fontproperties=font_annot)
         
         # 子图2：价格-销量散点图与热力图
         # 准备数据用于热力图
@@ -317,17 +486,33 @@ class DataVisualizer:
         # 创建交叉表
         cross_tab = pd.crosstab(price_bins.astype(str), quantity_bins.astype(str))
         
-        # 绘制热力图
-        sns.heatmap(cross_tab, 
-                   annot=True, 
-                   fmt='d', 
-                   cmap='YlGnBu',
-                   ax=ax2,
-                   cbar_kws={'label': '产品数量'})
+        # 绘制热力图 - 使用fontproperties设置annot的字体
+        heatmap = sns.heatmap(cross_tab, 
+                             annot=True, 
+                             fmt='d', 
+                             cmap='YlGnBu',
+                             ax=ax2,
+                             cbar_kws={'label': '产品数量'},
+                             annot_kws={'fontproperties': font_annot})
         
-        ax2.set_xlabel('销量区间', fontsize=12)
-        ax2.set_ylabel('价格区间', fontsize=12)
-        ax2.set_title('价格-销量分布热力图', fontsize=14, fontweight='bold', pad=15)
+        # 设置标题和标签
+        ax2.set_xlabel('销量区间', fontproperties=font_label)
+        ax2.set_ylabel('价格区间', fontproperties=font_label)
+        ax2.set_title('价格-销量分布热力图', fontproperties=font_title, fontweight='bold', pad=15)
+        
+        # 为x轴和y轴刻度标签设置字体
+        for label in ax2.get_xticklabels():
+            label.set_fontproperties(font_tick)
+        for label in ax2.get_yticklabels():
+            label.set_fontproperties(font_tick)
+        
+        # 设置colorbar的标签字体
+        cbar = ax2.collections[0].colorbar
+        cbar.ax.yaxis.label.set_fontproperties(font_label)
+        for label in cbar.ax.get_yticklabels():
+            label.set_fontproperties(font_tick)
+        
+        # 旋转x轴标签
         plt.setp(ax2.xaxis.get_majorticklabels(), rotation=45, ha='right')
         
         # 添加相关系数文本
@@ -336,10 +521,11 @@ class DataVisualizer:
         corr_text += f"价格-订单数相关系数: {corr_data['价格-订单数相关系数']:.4f}"
         
         ax1.text(0.02, 0.98, corr_text, transform=ax1.transAxes, 
-                fontsize=10, verticalalignment='top',
+                fontproperties=font_annot, verticalalignment='top',
                 bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
         
-        plt.suptitle('价格与销量相关性分析', fontsize=16, fontweight='bold', y=1.02)
+        # 总标题
+        plt.suptitle('价格与销量相关性分析', fontproperties=font_suptitle, fontweight='bold', y=1.02)
         plt.tight_layout()
         
         # 保存图表
