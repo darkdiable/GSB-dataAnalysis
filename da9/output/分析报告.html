@@ -1,0 +1,384 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电商销售数据分析报告</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', 'SimHei', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+        }
+        h2 {
+            color: #34495e;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #7f8c8d;
+        }
+        .metadata {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .metadata p {
+            margin: 5px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .chart-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #fafafa;
+            border-radius: 8px;
+        }
+        .chart-container img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .stat-box {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 15px 25px;
+            margin: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-box .value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .stat-box .label {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>电商销售数据分析报告</h1>
+        
+        <div class="metadata">
+            <p><strong>报告生成时间:</strong> 2026-04-28 12:29:18</p>
+            <p><strong>分析周期:</strong> 过去12个月</p>
+        </div>
+        
+        <h2>一、数据概览</h2>
+        <div class="stat-box">
+            <div class="value">200</div>
+            <div class="label">总用户数</div>
+        </div>
+        <div class="stat-box">
+            <div class="value">100</div>
+            <div class="label">总产品数</div>
+        </div>
+        <div class="stat-box">
+            <div class="value">860</div>
+            <div class="label">有效订单数</div>
+        </div>
+        
+        <h2>二、月度销售额趋势分析</h2>
+
+        <div class="stat-box">
+            <div class="value">¥4,660,216.15</div>
+            <div class="label">总销售额</div>
+        </div>
+        <div class="stat-box">
+            <div class="value">860</div>
+            <div class="label">总订单数</div>
+        </div>
+        <div class="stat-box">
+            <div class="value">2026-01</div>
+            <div class="label">销售峰值月份</div>
+        </div>
+        
+        <div class="highlight">
+            <strong>关键发现:</strong> 销售峰值出现在 2026-01，当月销售额为 ¥494,867.93
+        </div>
+        
+        <h3>月度销售额趋势图</h3>
+        <div class="chart-container">
+            <img src="1_月度销售额趋势.png" alt="月度销售额趋势图">
+        </div>
+
+        <h2>三、RFM用户分层分析</h2>
+
+        <h3>用户分层统计</h3>
+        <table>
+            <tr>
+                <th>用户分层</th>
+                <th>用户数</th>
+                <th>用户数占比</th>
+                <th>平均消费金额</th>
+                <th>平均消费次数</th>
+            </tr>
+
+            <tr>
+                <td>一般价值用户</td>
+                <td>9</td>
+                <td>4.55%</td>
+                <td>¥16,645.45</td>
+                <td>5.7</td>
+            </tr>
+
+            <tr>
+                <td>一般保持用户</td>
+                <td>5</td>
+                <td>2.53%</td>
+                <td>¥19,554.01</td>
+                <td>5.2</td>
+            </tr>
+
+            <tr>
+                <td>一般发展用户</td>
+                <td>34</td>
+                <td>17.17%</td>
+                <td>¥12,461.27</td>
+                <td>3.1</td>
+            </tr>
+
+            <tr>
+                <td>一般挽留用户</td>
+                <td>51</td>
+                <td>25.76%</td>
+                <td>¥11,310.01</td>
+                <td>2.6</td>
+            </tr>
+
+            <tr>
+                <td>重要价值用户</td>
+                <td>44</td>
+                <td>22.22%</td>
+                <td>¥36,155.15</td>
+                <td>6.5</td>
+            </tr>
+
+            <tr>
+                <td>重要保持用户</td>
+                <td>29</td>
+                <td>14.65%</td>
+                <td>¥36,750.75</td>
+                <td>5.9</td>
+            </tr>
+
+            <tr>
+                <td>重要发展用户</td>
+                <td>12</td>
+                <td>6.06%</td>
+                <td>¥28,124.85</td>
+                <td>3.6</td>
+            </tr>
+
+            <tr>
+                <td>重要挽留用户</td>
+                <td>14</td>
+                <td>7.07%</td>
+                <td>¥29,860.48</td>
+                <td>3.4</td>
+            </tr>
+
+        </table>
+        
+        <div class="highlight">
+            <strong>营销建议:</strong> 
+            <ul>
+                <li><strong>重要价值用户</strong>: 提供VIP专属服务，保持高忠诚度</li>
+                <li><strong>重要发展用户</strong>: 推荐相关产品，提升消费频率</li>
+                <li><strong>重要保持用户</strong>: 发送召回邮件，唤醒沉睡用户</li>
+                <li><strong>一般用户</strong>: 发送优惠券，刺激消费</li>
+            </ul>
+        </div>
+        
+        <h3>RFM用户分层图</h3>
+        <div class="chart-container">
+            <img src="2_RFM用户分层.png" alt="RFM用户分层图">
+        </div>
+
+        <h2>四、产品类别贡献度分析</h2>
+
+        <div class="stat-box">
+            <div class="value">电子产品</div>
+            <div class="label">销售冠军类别</div>
+        </div>
+        <div class="stat-box">
+            <div class="value">¥2,066,439</div>
+            <div class="label">冠军类别销售额</div>
+        </div>
+        <div class="stat-box">
+            <div class="value">44.3%</div>
+            <div class="label">冠军类别占比</div>
+        </div>
+        
+        <h3>各类别销售统计</h3>
+        <table>
+            <tr>
+                <th>类别</th>
+                <th>销售额</th>
+                <th>销售额占比</th>
+                <th>销量</th>
+                <th>平均单价</th>
+            </tr>
+
+            <tr>
+                <td>电子产品</td>
+                <td>¥2,066,439.13</td>
+                <td>44.34%</td>
+                <td>926</td>
+                <td>¥2,231.58</td>
+            </tr>
+
+            <tr>
+                <td>运动户外</td>
+                <td>¥802,371.22</td>
+                <td>17.22%</td>
+                <td>552</td>
+                <td>¥1,453.57</td>
+            </tr>
+
+            <tr>
+                <td>家居用品</td>
+                <td>¥772,445.57</td>
+                <td>16.58%</td>
+                <td>731</td>
+                <td>¥1,056.70</td>
+            </tr>
+
+            <tr>
+                <td>服装服饰</td>
+                <td>¥573,765.34</td>
+                <td>12.31%</td>
+                <td>1194</td>
+                <td>¥480.54</td>
+            </tr>
+
+            <tr>
+                <td>食品饮料</td>
+                <td>¥202,379.70</td>
+                <td>4.34%</td>
+                <td>814</td>
+                <td>¥248.62</td>
+            </tr>
+
+            <tr>
+                <td>美妆个护</td>
+                <td>¥199,403.20</td>
+                <td>4.28%</td>
+                <td>423</td>
+                <td>¥471.40</td>
+            </tr>
+
+            <tr>
+                <td>图书文具</td>
+                <td>¥43,411.99</td>
+                <td>0.93%</td>
+                <td>504</td>
+                <td>¥86.13</td>
+            </tr>
+
+        </table>
+        
+        <h3>产品类别贡献度图</h3>
+        <div class="chart-container">
+            <img src="3_产品类别贡献度.png" alt="产品类别贡献度图">
+        </div>
+
+        <h2>五、价格与销量相关性分析</h2>
+
+        <div class="highlight">
+            <strong>相关分析结果:</strong> 价格与销量<strong>相关性较弱</strong>（相关系数: -0.1896），价格不是影响销量的主要因素
+        </div>
+        
+        <div class="stat-box">
+            <div class="value">-0.1896</div>
+            <div class="label">价格-销量相关系数</div>
+        </div>
+        <div class="stat-box">
+            <div class="value">-0.2150</div>
+            <div class="label">价格-订单数相关系数</div>
+        </div>
+        
+        <h3>价格与销量相关性图</h3>
+        <div class="chart-container">
+            <img src="4_价格与销量相关性.png" alt="价格与销量相关性图">
+        </div>
+
+        <h2>六、总结与建议</h2>
+        <div class="highlight">
+            <h3>主要发现</h3>
+            <ol>
+                <li><strong>销售趋势</strong>: 关注销售峰值月份，提前备货和营销</li>
+                <li><strong>用户价值</strong>: 重点维护"重要价值用户"，同时关注"重要保持用户"的召回</li>
+                <li><strong>产品结构</strong>: 销售冠军类别贡献最大，可考虑加大投入；长尾类别可评估是否需要优化</li>
+                <li><strong>定价策略</strong>: 根据价格与销量的相关性，制定合理的定价和促销策略</li>
+            </ol>
+            
+            <h3>行动建议</h3>
+            <ul>
+                <li>对不同RFM分层用户制定差异化营销策略</li>
+                <li>在销售淡季推出促销活动，提升整体销售额</li>
+                <li>优化产品组合，重点扶持高贡献度类别</li>
+                <li>定期进行数据分析，及时调整经营策略</li>
+            </ul>
+        </div>
+        
+        <div class="footer">
+            <p>本报告由电商销售数据分析系统自动生成</p>
+            <p>技术栈: Python + Pandas + Matplotlib + Seaborn</p>
+        </div>
+    </div>
+</body>
+</html>
