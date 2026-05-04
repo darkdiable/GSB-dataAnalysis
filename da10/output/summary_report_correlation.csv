@@ -1,0 +1,5 @@
+﻿,temperature,humidity,precipitation,wind_speed
+temperature,1.0,-0.588,0.273,0.646
+humidity,-0.588,1.0,-0.209,-0.538
+precipitation,0.273,-0.209,1.0,0.256
+wind_speed,0.646,-0.538,0.256,1.0
