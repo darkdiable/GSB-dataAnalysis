@@ -139,19 +139,19 @@
                 <div class="stat-label">总规则数</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">0</div>
+                <div class="stat-value">1</div>
                 <div class="stat-label">命中规则数</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">10</div>
+                <div class="stat-value">9</div>
                 <div class="stat-label">未命中规则数</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">100</div>
+                <div class="stat-value">500</div>
                 <div class="stat-label">总数据包数</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">100</div>
+                <div class="stat-value">498</div>
                 <div class="stat-label">默认拒绝数</div>
             </div>
         </div>
@@ -195,6 +195,19 @@
             <tbody>
         
                 <tr>
+                    <td>3</td>
+                    <td>30</td>
+                    <td>0.0.0.0/0</td>
+                    <td>10.0.0.0/8</td>
+                    <td>icmp</td>
+                    <td>any</td>
+                    <td class="action-deny">DENY</td>
+                    <td>2</td>
+                    <td>5.2505</td>
+                    <td><span class="badge badge-hit">命中</span></td>
+                </tr>
+            
+                <tr>
                     <td>1</td>
                     <td>10</td>
                     <td>192.168.1.0/24</td>
@@ -215,19 +228,6 @@
                     <td>udp</td>
                     <td>53</td>
                     <td class="action-allow">ALLOW</td>
-                    <td>0</td>
-                    <td>-</td>
-                    <td><span class="badge badge-miss">未命中</span></td>
-                </tr>
-            
-                <tr>
-                    <td>3</td>
-                    <td>30</td>
-                    <td>0.0.0.0/0</td>
-                    <td>10.0.0.0/8</td>
-                    <td>icmp</td>
-                    <td>any</td>
-                    <td class="action-deny">DENY</td>
                     <td>0</td>
                     <td>-</td>
                     <td><span class="badge badge-miss">未命中</span></td>
@@ -327,8 +327,8 @@
             </tbody>
         </table>
         
-        <h2>⚠️ 未命中规则 (10 条)</h2>
-        <button class="collapsible">点击展开查看 10 条未命中规则</button>
+        <h2>⚠️ 未命中规则 (9 条)</h2>
+        <button class="collapsible">点击展开查看 9 条未命中规则</button>
         <div class="collapsible-content">
             <table>
                 <thead>
@@ -362,16 +362,6 @@
                         <td>udp</td>
                         <td>53</td>
                         <td class="action-allow">ALLOW</td>
-                    </tr>
-                
-                    <tr>
-                        <td>3</td>
-                        <td>30</td>
-                        <td>0.0.0.0/0</td>
-                        <td>10.0.0.0/8</td>
-                        <td>icmp</td>
-                        <td>any</td>
-                        <td class="action-deny">DENY</td>
                     </tr>
                 
                     <tr>
@@ -463,8 +453,8 @@
         </script>
             
         <div class="footer">
-            <p>报告生成时间: 2026-05-09 15:27:35</p>
-            <p>平均规则匹配时间: 0.0000 微秒</p>
+            <p>报告生成时间: 2026-05-09 15:46:00</p>
+            <p>平均规则匹配时间: 5.2505 微秒</p>
         </div>
     </div>
 </body>

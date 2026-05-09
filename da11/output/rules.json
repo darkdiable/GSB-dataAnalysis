@@ -31,9 +31,9 @@
     "protocol": "icmp",
     "port": "any",
     "action": "deny",
-    "hit_count": 0,
-    "total_match_time": 0.0,
-    "avg_match_time": 0.0
+    "hit_count": 2,
+    "total_match_time": 10.501000000051608,
+    "avg_match_time": 5.250500000025804
   },
   {
     "id": 4,

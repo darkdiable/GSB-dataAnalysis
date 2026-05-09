@@ -7,6 +7,17 @@ from typing import List, Tuple
 from .rules import Rule
 from .matcher import MatchResult
 
+plt.rcParams['font.sans-serif'] = [
+    'Arial Unicode MS',
+    'PingFang SC',
+    'Hiragino Sans GB',
+    'Microsoft YaHei',
+    'SimHei',
+    'STHeiti',
+    'Heiti TC'
+]
+plt.rcParams['axes.unicode_minus'] = False
+
 class Visualizer:
     @staticmethod
     def ensure_output_dir(output_dir: str):
